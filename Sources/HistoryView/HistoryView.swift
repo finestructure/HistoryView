@@ -228,23 +228,3 @@ extension HistoryView {
     }
     #endif
 }
-
-
-extension HistoryView {
-    struct Sample {
-        static var history: [Step] {
-            [0, 1, 2, 3].map({
-                Step(index: $0,
-                     action: "action \($0)",
-                    resultingState: Data("foo".utf8))
-            })
-        }
-    }
-}
-
-
-struct HistoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        HistoryView(history: HistoryView.Sample.history, broadcastEnabled: false)
-    }
-}
