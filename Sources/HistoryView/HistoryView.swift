@@ -12,26 +12,38 @@ import MultipeerKit
 import SwiftUI
 
 
+struct Config {
+    #if os(macOS)
+    var minWidth: CGFloat? = 500
+    var minHeight: CGFloat? = 300
+    #else
+    var minWidth: CGFloat? = nil
+    var minHeight: CGFloat? = nil
+    #endif
+}
+
+
 public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
     @EnvironmentObject var dataSource: MultipeerDataSource
     @SwiftUI.State var targeted = false
+    var config = Config()
 
     public var body: some View {
         VStack(alignment: .leading) {
             peerList
             
-            #if os(macOS)
-            historyList.frame(minWidth: 500, minHeight: 300)
-            #else
-            historyList
-            #endif
+            historyList.frame(minWidth: config.minWidth, minHeight: config.minHeight)
         }
     }
     
     var peerList: some View {
         VStack(alignment: .leading) {
+            #if os(macOS)
+            Text("Peers").font(.system(.headline)).padding([.leading, .top])
+            #else
             Text("Peers").font(.system(.headline)).padding()
+            #endif
             List {
                 ForEach(dataSource.availablePeers) { peer in
                     HStack {
