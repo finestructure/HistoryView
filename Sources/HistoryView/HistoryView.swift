@@ -13,7 +13,6 @@ import SwiftUI
 
 public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
-    @SwiftUI.State var targeted = false
 
     func rowView(for step: Step) -> AnyView {
         guard let step = store.value.history.first(where: { $0.id == step.id }) else {
@@ -94,8 +93,6 @@ extension HistoryView {
         return Store(initialValue: State(history: history, broadcastEnabled: broadcastEnabled),
                      reducer: reducer)
     }
-
-    public init(store: Store<State, Action>) { self.store = store }
 
     public init(history: [Step], broadcastEnabled: Bool) {
         self.store = Self.store(history: history, broadcastEnabled: broadcastEnabled)
