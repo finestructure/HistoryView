@@ -15,15 +15,37 @@ import SwiftUI
 public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
     @EnvironmentObject var dataSource: MultipeerDataSource
-
+    
     public var body: some View {
-        #if os(macOS)
-        return historyList.frame(minWidth: 500, minHeight: 300)
-        #else
-        return historyList
-        #endif
+        VStack(alignment: .leading) {
+            peerList
+            
+            #if os(macOS)
+            historyList.frame(minWidth: 500, minHeight: 300)
+            #else
+            historyList
+            #endif
+        }
     }
-
+    
+    var peerList: some View {
+        VStack(alignment: .leading) {
+            Text("Peers").font(.system(.headline)).padding()
+            List {
+                ForEach(dataSource.availablePeers) { peer in
+                    HStack {
+                        Circle()
+                            .frame(width: 12, height: 12)
+                            .foregroundColor(peer.isConnected ? .green : .gray)
+                        Text(peer.name)
+                        Spacer()
+                    }
+                }
+            }
+            .frame(height: 150)
+        }
+    }
+    
     var historyList: some View {
         VStack(alignment: .leading) {
             #if os(macOS)
@@ -31,7 +53,7 @@ public struct HistoryView: View {
             #else
             Text("History").font(.system(.headline)).padding()
             #endif
-
+            
             #if os(iOS)
             List(selection: store.binding(value: \.selection, action: /Action.selection)) {
                 ForEach(store.value.history.reversed()) {
@@ -46,7 +68,7 @@ public struct HistoryView: View {
             }
             .onDrop(of: [uti], isTargeted: $targeted, perform: dropHandler)
             #endif
-
+            
             HStack {
                 Button(action: { self.store.send(.deleteTapped) }, label: {
                     #if os(iOS)
@@ -74,7 +96,7 @@ public struct HistoryView: View {
             .padding()
         }
     }
-
+    
     func rowView(for step: Step) -> AnyView {
         guard let step = store.value.history.first(where: { $0.id == step.id }) else {
             return AnyView(EmptyView())
@@ -86,7 +108,7 @@ public struct HistoryView: View {
                 action: { .row(IdentifiedRow(id: row.id, action: $0)) }))
         )
     }
-
+    
 }
 
 
@@ -98,9 +120,9 @@ extension HistoryView {
         return Store(initialValue: State(history: history, broadcastEnabled: broadcastEnabled),
                      reducer: reducer)
     }
-
+    
     public init(store: Store<State, Action>) { self.store = store }
-
+    
     public init(history: [Step], broadcastEnabled: Bool) {
         self.store = Self.store(history: history, broadcastEnabled: broadcastEnabled)
     }
@@ -113,7 +135,7 @@ extension HistoryView {
 #if os(macOS)
 extension HistoryView {
     var uti: String { "public.utf8-plain-text" }
-
+    
     func dropHandler(_ items: [NSItemProvider]) -> Bool {
         guard let item = items.first else { return false }
         print(item.registeredTypeIdentifiers)
