@@ -15,17 +15,7 @@ let serviceType = "Historian"
 
 
 enum Transceiver {
-    static public func resume() { transceiver.resume() }
-    static public func send<T: Encodable>(_ payload: T, to peers: [Peer]) {
-        transceiver.send(payload, to: peers)
-    }
-    static public func broadcast<T: Encodable>(_ payload: T) { transceiver.broadcast(payload) }
-    static var availablePeers: [Peer] { dataSource.availablePeers }
-    static func receive<T: Codable>(_ type: T.Type, using closure: @escaping (_ payload: T) -> Void) {
-        transceiver.receive(type, using: closure)
-    }
-
-    static private var transceiver: MultipeerTransceiver = {
+    public static var shared: MultipeerTransceiver = {
         var config = MultipeerConfiguration.default
         config.serviceType = serviceType
         config.security.encryptionPreference = .required
@@ -33,7 +23,7 @@ enum Transceiver {
     }()
 
     static public var dataSource: MultipeerDataSource = {
-        MultipeerDataSource(transceiver: transceiver)
+        MultipeerDataSource(transceiver: shared)
     }()
 }
 
@@ -46,7 +36,7 @@ public func broadcast<Value: Encodable, Action>(_ reducer: @escaping Reducer<Val
             if let data = try? JSONEncoder().encode(newValue) {
                 print("📡 Broadcasting state ...")
                 let msg = Message(kind: .record, action: "\(action)", state: data)
-                Transceiver.broadcast(msg)
+                Transceiver.shared.broadcast(msg)
             }
             }] + effects
     }

@@ -175,7 +175,7 @@ extension HistoryView {
                 case .newState(let newState):
                     if state.broadcastEnabled {
                         let msg = Message(kind: .reset, action: "", state: newState)
-                        Transceiver.broadcast(msg)
+                        Transceiver.shared.broadcast(msg)
                     }
                     return []
                 case .row((let id, .rowTapped)):
@@ -212,7 +212,7 @@ extension HistoryView {
             DispatchQueue.main.async {
                 if self.store.value.broadcastEnabled, let data = data as? Data {
                     let msg = Message(kind: .reset, action: "", state: data)
-                    Transceiver.broadcast(msg)
+                    Transceiver.shared.broadcast(msg)
                 }
             }
         }

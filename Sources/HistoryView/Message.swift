@@ -8,13 +8,13 @@
 
 import Foundation
 
-struct Message: Hashable, Codable {
-    enum Command: String, Codable {
+public struct Message: Hashable, Codable {
+    public enum Command: String, Codable {
         case record
         case reset
     }
 
-    let kind: Command
-    let action: String
-    let state: Data?
+    public let kind: Command
+    public let action: String
+    public let state: Data?
 }
