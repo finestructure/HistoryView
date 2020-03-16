@@ -11,14 +11,6 @@ import CompArch
 import SwiftUI
 
 
-public struct Step: Identifiable, Hashable {
-    public var id: Int { index }
-    var index: Int
-    var action: String
-    var resultingState: Data
-}
-
-
 public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
     @SwiftUI.State var targeted = false
