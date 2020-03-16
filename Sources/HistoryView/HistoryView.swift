@@ -16,9 +16,11 @@ struct Config {
     #if os(macOS)
     var minWidth: CGFloat? = 500
     var minHeight: CGFloat? = 300
+    var titlePadding: Edge.Set = [.leading, .top]
     #else
     var minWidth: CGFloat? = nil
     var minHeight: CGFloat? = nil
+    var titlePadding: Edge.Set = .all
     #endif
 }
 
@@ -39,11 +41,7 @@ public struct HistoryView: View {
     
     var peerList: some View {
         VStack(alignment: .leading) {
-            #if os(macOS)
-            Text("Peers").font(.system(.headline)).padding([.leading, .top])
-            #else
-            Text("Peers").font(.system(.headline)).padding()
-            #endif
+            Text("Peers").font(.system(.headline)).padding(config.titlePadding)
             List {
                 ForEach(dataSource.availablePeers) { peer in
                     HStack {
@@ -61,53 +59,37 @@ public struct HistoryView: View {
     
     var historyList: some View {
         VStack(alignment: .leading) {
-            #if os(macOS)
-            Text("History").font(.system(.headline)).padding([.leading, .top])
-            #else
-            Text("History").font(.system(.headline)).padding()
-            #endif
-            
-            #if os(iOS)
-            List(selection: store.binding(value: \.selection, action: /Action.selection)) {
-                ForEach(store.value.history.reversed()) {
-                    self.rowView(for: $0)
-                }
-            }
-            #else
+            Text("History").font(.system(.headline)).padding(config.titlePadding)
+
             List(selection: store.binding(value: \.selection, action: /Action.selection)) {
                 ForEach(store.value.history.reversed(), id: \.self) {
                     self.rowView(for: $0)
                 }
             }
-            .onDrop(of: [uti], isTargeted: $targeted, perform: dropHandler)
-            #endif
-            
+            ._onDrop(of: [uti], isTargeted: $targeted, perform: dropHandler)
+
             HStack {
                 Button(action: { self.store.send(.deleteTapped) }, label: {
-                    #if os(iOS)
-                    Image(systemName: "trash").padding()
-                    #else
-                    Text("Delete")
-                    #endif
+                    self.buttonLabel(title: "Delete", systemImage: "trash")
                 })
                 Spacer()
                 Button(action: { self.store.send(.backTapped) }, label: {
-                    #if os(iOS)
-                    Image(systemName: "backward").padding()
-                    #else
-                    Text("←")
-                    #endif
+                    self.buttonLabel(title: "←", systemImage: "backward")
                 })
                 Button(action: { self.store.send(.forwardTapped) }, label: {
-                    #if os(iOS)
-                    Image(systemName: "forward").padding()
-                    #else
-                    Text("→")
-                    #endif
+                    self.buttonLabel(title: "→", systemImage: "forward")
                 })
             }
             .padding()
         }
+    }
+
+    func buttonLabel(title: String, systemImage: String) -> some View {
+        #if os(macOS)
+        return AnyView(Text(title))
+        #else
+        return AnyView(Image(systemName: systemImage).padding())
+        #endif
     }
     
     func rowView(for step: Step) -> AnyView {
@@ -143,9 +125,22 @@ extension HistoryView {
 
 
 
-// MARK: - Drop handler
+// MARK: - Drop handling
 
-#if os(macOS)
+extension View {
+    func _onDrop(of supportedTypes: [String],
+                 isTargeted targeted: Binding<Bool>?,
+                 perform action: @escaping ([NSItemProvider]) -> Bool) -> some View {
+
+        if #available(iOS 13.4, macOS 10.15, *) {
+            return AnyView(self.onDrop(of: supportedTypes, isTargeted: targeted, perform: action))
+        } else {
+            return AnyView(self)
+        }
+    }
+}
+
+
 extension HistoryView {
     var uti: String { "public.utf8-plain-text" }
     
@@ -163,4 +158,3 @@ extension HistoryView {
         return true
     }
 }
-#endif
