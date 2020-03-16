@@ -8,26 +8,24 @@
 
 import CasePaths
 import CompArch
+import MultipeerKit
 import SwiftUI
 
 
 public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
-
-    func rowView(for step: Step) -> AnyView {
-        guard let step = store.value.history.first(where: { $0.id == step.id }) else {
-            return AnyView(EmptyView())
-        }
-        let row = RowView.State(step: step, selected: step.id == store.value.selection?.id)
-        return AnyView(
-            RowView(store: self.store.view(
-                value: { _ in row },
-                action: { .row(IdentifiedRow(id: row.id, action: $0)) }))
-        )
-    }
+    @EnvironmentObject var dataSource: MultipeerDataSource
 
     public var body: some View {
-        let stack = VStack(alignment: .leading) {
+        #if os(macOS)
+        return historyList.frame(minWidth: 500, minHeight: 300)
+        #else
+        return historyList
+        #endif
+    }
+
+    var historyList: some View {
+        VStack(alignment: .leading) {
             #if os(macOS)
             Text("History").font(.system(.headline)).padding([.leading, .top])
             #else
@@ -75,13 +73,20 @@ public struct HistoryView: View {
             }
             .padding()
         }
-
-        #if os(macOS)
-        return stack.frame(minWidth: 500, minHeight: 300)
-        #else
-        return stack
-        #endif
     }
+
+    func rowView(for step: Step) -> AnyView {
+        guard let step = store.value.history.first(where: { $0.id == step.id }) else {
+            return AnyView(EmptyView())
+        }
+        let row = RowView.State(step: step, selected: step.id == store.value.selection?.id)
+        return AnyView(
+            RowView(store: self.store.view(
+                value: { _ in row },
+                action: { .row(IdentifiedRow(id: row.id, action: $0)) }))
+        )
+    }
+
 }
 
 
