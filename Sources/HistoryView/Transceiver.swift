@@ -14,7 +14,7 @@ import MultipeerKit
 let serviceType = "Historian"
 
 
-enum Transceiver {
+public enum Transceiver {
     public static var shared: MultipeerTransceiver = {
         var config = MultipeerConfiguration.default
         config.serviceType = serviceType
