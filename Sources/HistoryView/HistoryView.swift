@@ -195,6 +195,8 @@ extension HistoryView {
                      reducer: reducer)
     }
 
+    public init(store: Store<State, Action>) { self.store = store }
+
     public init(history: [Step], broadcastEnabled: Bool) {
         self.store = Self.store(history: history, broadcastEnabled: broadcastEnabled)
     }
