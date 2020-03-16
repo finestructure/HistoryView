@@ -10,13 +10,13 @@ import CompArch
 import SwiftUI
 
 
-typealias IdentifiedRow = Identified<RowView.State, RowView.Action>
+public typealias IdentifiedRow = Identified<RowView.State, RowView.Action>
 
 
-struct RowView: View {
+public struct RowView: View {
     @ObservedObject var store: Store<State, Action>
 
-    var body: some View {
+    public var body: some View {
         #if os(macOS)
         let view = HStack {
             Text("\(self.store.value.step.id)")
@@ -49,13 +49,13 @@ struct RowView: View {
 
 
 extension RowView {
-    struct State: Identifiable {
-        var id: Int { step.id }
+    public struct State: Identifiable {
+        public var id: Int { step.id }
         var step: Step
         var selected = false
     }
 
-    enum Action {
+    public enum Action {
         case rowTapped
     }
 }

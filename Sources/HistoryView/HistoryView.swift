@@ -11,15 +11,15 @@ import CompArch
 import SwiftUI
 
 
-struct Step: Identifiable, Hashable {
-    var id: Int { index }
+public struct Step: Identifiable, Hashable {
+    public var id: Int { index }
     var index: Int
     var action: String
     var resultingState: Data
 }
 
 
-struct HistoryView: View {
+public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
     @SwiftUI.State var targeted = false
 
@@ -35,7 +35,7 @@ struct HistoryView: View {
         )
     }
 
-    var body: some View {
+    public var body: some View {
         let stack = VStack(alignment: .leading) {
             #if os(macOS)
             Text("History").font(.system(.headline)).padding([.leading, .top])
@@ -95,7 +95,7 @@ struct HistoryView: View {
 
 
 extension HistoryView {
-    struct State {
+    public struct State {
         var history: [Step] = []
         var selection: Step? = nil
         var broadcastEnabled = false
@@ -119,7 +119,7 @@ extension HistoryView {
         }
     }
 
-    enum Action {
+    public enum Action {
         case appendStep(String, Data?)
         case selection(Step?)
         case deleteTapped
@@ -190,12 +190,12 @@ extension HistoryView {
 
 
 extension HistoryView {
-    static func store(history: [Step], broadcastEnabled: Bool) -> Store<State, Action> {
+    public static func store(history: [Step], broadcastEnabled: Bool) -> Store<State, Action> {
         return Store(initialValue: State(history: history, broadcastEnabled: broadcastEnabled),
                      reducer: reducer)
     }
 
-    init(history: [Step], broadcastEnabled: Bool) {
+    public init(history: [Step], broadcastEnabled: Bool) {
         self.store = Self.store(history: history, broadcastEnabled: broadcastEnabled)
     }
 }
