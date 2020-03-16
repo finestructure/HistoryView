@@ -15,7 +15,8 @@ import SwiftUI
 public struct HistoryView: View {
     @ObservedObject var store: Store<State, Action>
     @EnvironmentObject var dataSource: MultipeerDataSource
-    
+    @SwiftUI.State var targeted = false
+
     public var body: some View {
         VStack(alignment: .leading) {
             peerList
