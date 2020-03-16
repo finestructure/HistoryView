@@ -72,18 +72,14 @@ extension HistoryView {
                 case .deleteTapped:
                     guard let current = state.selection else { return [] }
                     defer { state.history.removeFirst(value: current) }
-                    guard let previous = state.stepBefore(current)
-                        // we're at the start / on the first entry
-                        else { return [ .sync { .newState(nil) } ] }
+                    let previous = state.stepBefore(current)
                     state.selection = previous
-                    return [ .sync { .newState(previous.resultingState) } ]
+                    return [ .sync { .newState(previous?.resultingState) } ]
                 case .backTapped:
-                    guard
-                        let current = state.selection,
-                        let previous = state.stepBefore(current)
-                        else { return [ .sync { .newState(nil) } ] }
+                    guard let current = state.selection else { return [] }
+                    let previous = state.stepBefore(current)
                     state.selection = previous
-                    return [ .sync { .newState(previous.resultingState) } ]
+                    return [ .sync { .newState(previous?.resultingState) } ]
                 case .forwardTapped:
                     guard let current = state.selection else { return [] }
                     guard
@@ -91,8 +87,7 @@ extension HistoryView {
                         idx != state.history.count - 1
                         // can't advance further than tip
                         else { return [] }
-                    guard let next = state.stepAfter(current)
-                        else { return [ .sync { .newState(nil) } ] }
+                    guard let next = state.stepAfter(current) else { return [] }
                     state.selection = next
                     return [ .sync { .newState(next.resultingState) } ]
                 case .newState(let newState):
