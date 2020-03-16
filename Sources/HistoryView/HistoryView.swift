@@ -117,6 +117,12 @@ extension HistoryView {
                 else { return nil }
             return history[prevIdx]
         }
+
+        public init(history: [Step] = [], selection: Step? = nil, broadcastEnabled: Bool = false) {
+            self.history = history
+            self.selection = selection
+            self.broadcastEnabled = broadcastEnabled
+        }
     }
 
     public enum Action {
@@ -129,7 +135,7 @@ extension HistoryView {
         case row(IdentifiedRow)
     }
 
-    static var reducer: Reducer<State, Action> {
+    public static var reducer: Reducer<State, Action> {
         return { state, action in
             switch action {
                 case let .appendStep(stepAction, .some(postActionState)):
