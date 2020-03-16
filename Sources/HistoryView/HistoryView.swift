@@ -17,10 +17,12 @@ struct Config {
     var minWidth: CGFloat? = 500
     var minHeight: CGFloat? = 300
     var titlePadding: Edge.Set = [.leading, .top]
+    var peerListHeight: CGFloat = 100
     #else
     var minWidth: CGFloat? = nil
     var minHeight: CGFloat? = nil
     var titlePadding: Edge.Set = .all
+    var peerListHeight: CGFloat = 150
     #endif
 }
 
@@ -34,7 +36,6 @@ public struct HistoryView: View {
     public var body: some View {
         VStack(alignment: .leading) {
             peerList
-            
             historyList.frame(minWidth: config.minWidth, minHeight: config.minHeight)
         }
     }
@@ -53,7 +54,7 @@ public struct HistoryView: View {
                     }
                 }
             }
-            .frame(height: 150)
+            .frame(height: config.peerListHeight)
         }
     }
     
